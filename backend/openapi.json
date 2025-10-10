@@ -1,0 +1,1142 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/chat": {
+      "post": {
+        "summary": "Chat",
+        "description": "Simple streaming chat endpoint.",
+        "operationId": "chat_chat_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AudioUrl": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "force_download": {
+            "type": "boolean",
+            "title": "Force Download",
+            "default": false
+          },
+          "vendor_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendor Metadata"
+          },
+          "media_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Media Type"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifier"
+          },
+          "kind": {
+            "type": "string",
+            "const": "audio-url",
+            "title": "Kind",
+            "default": "audio-url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "AudioUrl"
+      },
+      "BinaryContent": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "binary",
+            "title": "Data"
+          },
+          "media_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "audio/wav",
+                  "audio/mpeg",
+                  "audio/ogg",
+                  "audio/flac",
+                  "audio/aiff",
+                  "audio/aac"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/gif",
+                  "image/webp"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "application/pdf",
+                  "text/plain",
+                  "text/csv",
+                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                  "text/html",
+                  "text/markdown",
+                  "application/vnd.ms-excel"
+                ]
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Media Type"
+          },
+          "vendor_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendor Metadata"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifier"
+          },
+          "kind": {
+            "type": "string",
+            "const": "binary",
+            "title": "Kind",
+            "default": "binary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "media_type"
+        ],
+        "title": "BinaryContent"
+      },
+      "BuiltinToolCallPart": {
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "title": "Tool Name"
+          },
+          "args": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Args"
+          },
+          "tool_call_id": {
+            "type": "string",
+            "title": "Tool Call Id"
+          },
+          "provider_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Name"
+          },
+          "part_kind": {
+            "type": "string",
+            "const": "builtin-tool-call",
+            "title": "Part Kind",
+            "default": "builtin-tool-call"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tool_name"
+        ],
+        "title": "BuiltinToolCallPart"
+      },
+      "BuiltinToolReturnPart": {
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "title": "Tool Name"
+          },
+          "content": {
+            "title": "Content"
+          },
+          "tool_call_id": {
+            "type": "string",
+            "title": "Tool Call Id"
+          },
+          "metadata": {
+            "title": "Metadata"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "provider_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Name"
+          },
+          "part_kind": {
+            "type": "string",
+            "const": "builtin-tool-return",
+            "title": "Part Kind",
+            "default": "builtin-tool-return"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tool_name",
+          "content"
+        ],
+        "title": "BuiltinToolReturnPart"
+      },
+      "ChatRequest": {
+        "properties": {
+          "messages": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ModelRequest"
+                },
+                {
+                  "$ref": "#/components/schemas/ModelResponse"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "kind",
+                "mapping": {
+                  "request": "#/components/schemas/ModelRequest",
+                  "response": "#/components/schemas/ModelResponse"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Messages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "messages"
+        ],
+        "title": "ChatRequest"
+      },
+      "DocumentUrl": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "force_download": {
+            "type": "boolean",
+            "title": "Force Download",
+            "default": false
+          },
+          "vendor_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendor Metadata"
+          },
+          "media_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Media Type"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifier"
+          },
+          "kind": {
+            "type": "string",
+            "const": "document-url",
+            "title": "Kind",
+            "default": "document-url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "DocumentUrl"
+      },
+      "ErrorDetails": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Loc"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Msg"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ctx"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "loc",
+          "msg",
+          "input"
+        ],
+        "title": "ErrorDetails"
+      },
+      "FilePart": {
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/BinaryContent"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "provider_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Name"
+          },
+          "part_kind": {
+            "type": "string",
+            "const": "file",
+            "title": "Part Kind",
+            "default": "file"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "FilePart"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImageUrl": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "force_download": {
+            "type": "boolean",
+            "title": "Force Download",
+            "default": false
+          },
+          "vendor_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendor Metadata"
+          },
+          "media_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Media Type"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifier"
+          },
+          "kind": {
+            "type": "string",
+            "const": "image-url",
+            "title": "Kind",
+            "default": "image-url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "ImageUrl"
+      },
+      "ModelRequest": {
+        "properties": {
+          "parts": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SystemPromptPart"
+                },
+                {
+                  "$ref": "#/components/schemas/UserPromptPart"
+                },
+                {
+                  "$ref": "#/components/schemas/ToolReturnPart"
+                },
+                {
+                  "$ref": "#/components/schemas/RetryPromptPart"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "part_kind",
+                "mapping": {
+                  "retry-prompt": "#/components/schemas/RetryPromptPart",
+                  "system-prompt": "#/components/schemas/SystemPromptPart",
+                  "tool-return": "#/components/schemas/ToolReturnPart",
+                  "user-prompt": "#/components/schemas/UserPromptPart"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Parts"
+          },
+          "instructions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instructions"
+          },
+          "kind": {
+            "type": "string",
+            "const": "request",
+            "title": "Kind",
+            "default": "request"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parts"
+        ],
+        "title": "ModelRequest"
+      },
+      "ModelResponse": {
+        "properties": {
+          "parts": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/TextPart"
+                },
+                {
+                  "$ref": "#/components/schemas/ToolCallPart"
+                },
+                {
+                  "$ref": "#/components/schemas/BuiltinToolCallPart"
+                },
+                {
+                  "$ref": "#/components/schemas/BuiltinToolReturnPart"
+                },
+                {
+                  "$ref": "#/components/schemas/ThinkingPart"
+                },
+                {
+                  "$ref": "#/components/schemas/FilePart"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "part_kind",
+                "mapping": {
+                  "builtin-tool-call": "#/components/schemas/BuiltinToolCallPart",
+                  "builtin-tool-return": "#/components/schemas/BuiltinToolReturnPart",
+                  "file": "#/components/schemas/FilePart",
+                  "text": "#/components/schemas/TextPart",
+                  "thinking": "#/components/schemas/ThinkingPart",
+                  "tool-call": "#/components/schemas/ToolCallPart"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Parts"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/RequestUsage"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "kind": {
+            "type": "string",
+            "const": "response",
+            "title": "Kind",
+            "default": "response"
+          },
+          "provider_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Name"
+          },
+          "provider_details": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Details"
+          },
+          "provider_response_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Response Id"
+          },
+          "finish_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "stop",
+                  "length",
+                  "content_filter",
+                  "tool_call",
+                  "error"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finish Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "parts"
+        ],
+        "title": "ModelResponse"
+      },
+      "RequestUsage": {
+        "properties": {
+          "input_tokens": {
+            "type": "integer",
+            "title": "Input Tokens",
+            "default": 0
+          },
+          "cache_write_tokens": {
+            "type": "integer",
+            "title": "Cache Write Tokens",
+            "default": 0
+          },
+          "cache_read_tokens": {
+            "type": "integer",
+            "title": "Cache Read Tokens",
+            "default": 0
+          },
+          "output_tokens": {
+            "type": "integer",
+            "title": "Output Tokens",
+            "default": 0
+          },
+          "input_audio_tokens": {
+            "type": "integer",
+            "title": "Input Audio Tokens",
+            "default": 0
+          },
+          "cache_audio_read_tokens": {
+            "type": "integer",
+            "title": "Cache Audio Read Tokens",
+            "default": 0
+          },
+          "output_audio_tokens": {
+            "type": "integer",
+            "title": "Output Audio Tokens",
+            "default": 0
+          },
+          "details": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "title": "RequestUsage"
+      },
+      "RetryPromptPart": {
+        "properties": {
+          "content": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ErrorDetails"
+                },
+                "type": "array"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Content"
+          },
+          "tool_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Name"
+          },
+          "tool_call_id": {
+            "type": "string",
+            "title": "Tool Call Id"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "part_kind": {
+            "type": "string",
+            "const": "retry-prompt",
+            "title": "Part Kind",
+            "default": "retry-prompt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "RetryPromptPart"
+      },
+      "SystemPromptPart": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "dynamic_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dynamic Ref"
+          },
+          "part_kind": {
+            "type": "string",
+            "const": "system-prompt",
+            "title": "Part Kind",
+            "default": "system-prompt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "SystemPromptPart"
+      },
+      "TextPart": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "part_kind": {
+            "type": "string",
+            "const": "text",
+            "title": "Part Kind",
+            "default": "text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "TextPart"
+      },
+      "ThinkingPart": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "signature": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signature"
+          },
+          "provider_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Name"
+          },
+          "part_kind": {
+            "type": "string",
+            "const": "thinking",
+            "title": "Part Kind",
+            "default": "thinking"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "ThinkingPart"
+      },
+      "ToolCallPart": {
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "title": "Tool Name"
+          },
+          "args": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Args"
+          },
+          "tool_call_id": {
+            "type": "string",
+            "title": "Tool Call Id"
+          },
+          "part_kind": {
+            "type": "string",
+            "const": "tool-call",
+            "title": "Part Kind",
+            "default": "tool-call"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tool_name"
+        ],
+        "title": "ToolCallPart"
+      },
+      "ToolReturnPart": {
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "title": "Tool Name"
+          },
+          "content": {
+            "title": "Content"
+          },
+          "tool_call_id": {
+            "type": "string",
+            "title": "Tool Call Id"
+          },
+          "metadata": {
+            "title": "Metadata"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "part_kind": {
+            "type": "string",
+            "const": "tool-return",
+            "title": "Part Kind",
+            "default": "tool-return"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tool_name",
+          "content"
+        ],
+        "title": "ToolReturnPart"
+      },
+      "UserPromptPart": {
+        "properties": {
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ImageUrl"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AudioUrl"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DocumentUrl"
+                    },
+                    {
+                      "$ref": "#/components/schemas/VideoUrl"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BinaryContent"
+                    }
+                  ]
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Content"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "part_kind": {
+            "type": "string",
+            "const": "user-prompt",
+            "title": "Part Kind",
+            "default": "user-prompt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "UserPromptPart"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VideoUrl": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "force_download": {
+            "type": "boolean",
+            "title": "Force Download",
+            "default": false
+          },
+          "vendor_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendor Metadata"
+          },
+          "media_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Media Type"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifier"
+          },
+          "kind": {
+            "type": "string",
+            "const": "video-url",
+            "title": "Kind",
+            "default": "video-url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "VideoUrl"
+      }
+    }
+  }
+}
