@@ -1,11 +1,9 @@
 # main.py
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic_ai import Agent
-from pydantic_ai.messages import ModelMessage
-from pydantic import BaseModel
-from typing import List
+from pydantic_ai.ui.vercel_ai import VercelAIAdapter
 from dotenv import load_dotenv
 from pydantic_ai.models.bedrock import BedrockConverseModel
 from pydantic_ai.providers.bedrock import BedrockProvider
@@ -40,44 +38,10 @@ def get_weather(city: str) -> str:
     return f"Weather in {city}: Sunny, 72°F"
 
 
-class ChatRequest(BaseModel):
-    messages: List[ModelMessage]  # Pydantic AI's native type
-
-class ChatEvent(BaseModel):
-    type: str  # 'delta' | 'complete'
-    data: dict
-
-
 @app.post("/chat")
-async def chat(request: ChatRequest):
-    """Simple streaming chat endpoint."""
-    async def generate():
-        print("request is here")
-        print(request)
-
-        # Extract the user's text from the last message
-        user_prompt = request.messages[-1].parts[0].content if request.messages[-1].parts else ""
-
-        # Run agent with message history (excluding the current message to avoid duplication)
-        async with agent.run_stream(
-            user_prompt,  # Current user prompt
-            message_history=request.messages[:-1]  # Previous messages only
-        ) as response:
-            print("response is here")
-            print(response)
-            # Stream text deltas
-            async for delta in response.stream_text(delta=True):
-                event = ChatEvent(type="delta", data={"text": delta})
-                yield f"data: {event.model_dump_json()}\n\n"
-
-            # Send all messages when complete
-            event = ChatEvent(
-                type="complete",
-                data={"messages": response.all_messages()}
-            )
-            yield f"data: {event.model_dump_json()}\n\n"
-
-    return StreamingResponse(generate(), media_type="text/event-stream")
+async def chat(request: Request) -> Response:
+    """Streaming chat endpoint using Vercel AI protocol."""
+    return await VercelAIAdapter.dispatch_request(request, agent=agent)
 
 
 if __name__ == "__main__":

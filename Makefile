@@ -1,4 +1,4 @@
-.PHONY: help dev backend frontend install install-backend install-frontend generate-api clean
+.PHONY: help dev backend frontend install install-backend install-frontend clean
 
 help:
 	@echo "Available commands:"
@@ -8,7 +8,6 @@ help:
 	@echo "  make install          - Install all dependencies"
 	@echo "  make install-backend  - Install backend dependencies"
 	@echo "  make install-frontend - Install frontend dependencies"
-	@echo "  make generate-api     - Regenerate TypeScript API from OpenAPI schema"
 	@echo "  make clean            - Clean generated files"
 
 dev:
@@ -31,17 +30,6 @@ install-backend:
 
 install-frontend:
 	cd frontend && npm install
-
-generate-api:
-	@echo "Exporting OpenAPI schema..."
-	cd backend && uv run python export_openapi.py
-	@echo "Generating TypeScript client..."
-	cd frontend && npx @openapitools/openapi-generator-cli generate \
-		-i ../backend/openapi.json \
-		-g typescript-axios \
-		-o ./src/api \
-		--additional-properties=supportsES6=true,withInterfaces=true,useSingleRequestParameter=true
-	@echo "✅ TypeScript API client generated"
 
 clean:
 	rm -rf backend/__pycache__

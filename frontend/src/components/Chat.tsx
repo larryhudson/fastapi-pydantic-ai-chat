@@ -1,19 +1,14 @@
-import { useState, useRef, useEffect } from 'react';
-import { useChat } from '../hooks/useChat';
-import type {
-  ChatRequestMessagesInner,
-  ModelRequest,
-  ModelResponse,
-  ModelResponsePartsInner,
-  ModelRequestPartsInner,
-  TextPart,
-  ToolCallPart,
-  ToolReturnPart
-} from '../api';
+import { useRef, useEffect, useState } from 'react';
+import { DefaultChatTransport, type UIMessage } from 'ai';
 import './Chat.css';
+import { useChat } from '@ai-sdk/react';
 
 export function Chat() {
-  const { messages, streamingText, isStreaming, sendMessage } = useChat();
+  const {messages, sendMessage, status} = useChat({
+    transport: new DefaultChatTransport({
+      api: 'http://localhost:8000/chat',
+    }),
+  });
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -23,58 +18,32 @@ export function Chat() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, streamingText]);
+  }, [messages]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isStreaming) return;
+    if (!input.trim() || status !== 'ready') return;
 
-    sendMessage(input);
+    sendMessage({ text: input });
     setInput('');
   };
 
-  const renderPart = (part: ModelResponsePartsInner | ModelRequestPartsInner, idx: number) => {
-    if (part.part_kind === 'text') {
-      const textPart = part as TextPart;
-      return <div key={idx} className="message-part message-part-text">{textPart.content}</div>;
-    }
+  const renderMessage = (message: UIMessage) => {
+    return (
+      <div className="message-content">
+        {message.parts?.map((part, idx) => {
+          if (part.type === 'text') {
+            return (
+              <div key={idx} className="message-text">
+                {part.text}
+              </div>
+            );
+          }
 
-    if (part.part_kind === 'user-prompt') {
-      return <div key={idx} className="message-part message-part-text">{(part as any).content}</div>;
-    }
-
-    if (part.part_kind === 'tool-call') {
-      const toolCall = part as ToolCallPart;
-      return (
-        <div key={idx} className="message-part message-part-tool-call">
-          <strong>🔧 Tool Call:</strong> {toolCall.tool_name}
-          {toolCall.args && (
-            <pre className="tool-args">{JSON.stringify(toolCall.args, null, 2)}</pre>
-          )}
-        </div>
-      );
-    }
-
-    if (part.part_kind === 'tool-return') {
-      const toolReturn = part as ToolReturnPart;
-      return (
-        <div key={idx} className="message-part message-part-tool-return">
-          <strong>✅ Tool Result:</strong> {toolReturn.tool_name}
-          <pre className="tool-result">{JSON.stringify(toolReturn.content, null, 2)}</pre>
-        </div>
-      );
-    }
-
-    if (part.part_kind === 'thinking') {
-      return (
-        <div key={idx} className="message-part message-part-thinking">
-          <strong>💭 Thinking:</strong>
-          <div className="thinking-content">{(part as any).content}</div>
-        </div>
-      );
-    }
-
-    return null;
+          return null;
+        })}
+      </div>
+    );
   };
 
   return (
@@ -90,29 +59,12 @@ export function Chat() {
       </details>
 
       <div className="chat-messages">
-        {messages.map((msg, idx) => {
-          const role = msg.kind === 'request' ? 'user' : 'assistant';
-          const messageObj = msg as ChatRequestMessagesInner;
-
-          return (
-            <div key={idx} className={`message message-${role}`}>
-              <div className="message-role">{role}</div>
-              <div className="message-content">
-                {messageObj.parts.map((part, partIdx) => renderPart(part, partIdx))}
-              </div>
-            </div>
-          );
-        })}
-
-        {streamingText && (
-          <div className="message message-assistant streaming">
-            <div className="message-role">assistant</div>
-            <div className="message-content">
-              {streamingText}
-              <span className="cursor">▊</span>
-            </div>
+        {messages.map((message) => (
+          <div key={message.id} className={`message message-${message.role}`}>
+            <div className="message-role">{message.role}</div>
+            {renderMessage(message)}
           </div>
-        )}
+        ))}
 
         <div ref={messagesEndRef} />
       </div>
@@ -123,11 +75,11 @@ export function Chat() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about the weather or anything else..."
-          disabled={isStreaming}
+          disabled={status !== 'ready'}
           className="chat-input"
         />
-        <button type="submit" disabled={isStreaming || !input.trim()} className="chat-submit">
-          {isStreaming ? 'Streaming...' : 'Send'}
+        <button type="submit" disabled={status !== 'ready' || !input.trim()} className="chat-submit">
+          {status !== 'ready' ? 'Streaming...' : 'Send'}
         </button>
       </form>
     </div>

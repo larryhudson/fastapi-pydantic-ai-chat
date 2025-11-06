@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.118.3",
-    "pydantic-ai>=1.0.17",
+    "pydantic-ai",
     "uvicorn>=0.37.0",
     "python-dotenv>=1.0.0",
 ]

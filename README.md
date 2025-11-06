@@ -2,8 +2,8 @@
 
 A minimal demonstration of end-to-end type-safe streaming chat using:
 - **FastAPI + Pydantic AI** backend with tool support
-- **Server-Sent Events** for streaming responses
-- **OpenAPI → TypeScript** code generation for type safety
+- **Vercel AI Data Stream Protocol** for streaming responses
+- **Vercel AI SDK** frontend with automatic type safety
 - **React** frontend with real-time streaming UI
 
 ## Quick Start
@@ -43,34 +43,33 @@ Frontend runs at `http://localhost:5173`
 
 ## Key Features
 
-### Type Safety Flow
-1. Backend defines `ChatRequest` with `List[ModelMessage]` (Pydantic AI types)
-2. Export OpenAPI schema: `uv run python export_openapi.py`
-3. Generate TypeScript client: `npx @openapitools/openapi-generator-cli generate ...`
-4. Frontend uses generated types - **no manual type definitions needed**
+### Type Safety
+- **Pydantic AI** validates and serializes messages
+- **Vercel AI Data Stream Protocol** provides standardized message format
+- **Frontend types** automatically align with backend types
+- No manual type definitions or code generation needed
 
 ### Streaming Implementation
-- **Backend**: `StreamingResponse` with SSE format (`data: {json}\n\n`)
-- **Frontend**: `ReadableStream` with `getReader()` to process deltas
+- **Backend**: Uses `VercelAIAdapter.dispatch_request()` to handle Vercel AI protocol
+- **Frontend**: Uses `@ai-sdk/react` `useChat()` hook for automatic streaming handling
 - **Real-time**: Text appears character-by-character as it's generated
 
 ### Message Handling
-- **Full history**: Entire conversation sent with each request
-- **Tool calls**: Automatically tracked in message history
-- **Type-safe**: Frontend and backend share identical message structure
+- **Tool support**: Backend `@agent.tool_plain` decorated functions
+- **Message history**: Automatically maintained by Vercel AI SDK
+- **Type-safe**: Pydantic AI messages automatically converted to Vercel AI format
 
 ## Project Structure
 
 ```
 ├── backend/
-│   ├── main.py              # FastAPI app with streaming endpoint
-│   ├── export_openapi.py    # Schema generator
-│   └── openapi.json         # Generated OpenAPI schema
+│   ├── main.py              # FastAPI app with Pydantic AI
+│   └── pyproject.toml       # Dependencies
 └── frontend/
     ├── src/
-    │   ├── api/             # Generated TypeScript client
-    │   ├── hooks/useChat.ts # Chat hook with SSE handling
-    │   └── components/Chat.tsx
+    │   ├── hooks/useChat.ts      # Wrapper around Vercel AI's useChat
+    │   ├── components/Chat.tsx    # Chat UI component
+    │   └── App.tsx               # Main app
     └── package.json
 ```
 
