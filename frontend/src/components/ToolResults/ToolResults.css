@@ -1,0 +1,28 @@
+.tool-result {
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  border-left: 4px solid #4a90e2;
+}
+
+.tool-result-header {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.tool-result-content {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.tool-result-content p {
+  margin: 4px 0;
+}
+
+.tool-result.weather {
+  border-left-color: #f59e0b;
+}

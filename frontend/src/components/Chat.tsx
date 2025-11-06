@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import './Chat.css';
 import { useChat } from '@ai-sdk/react';
+import { renderToolPart } from './ToolResults/toolRenderers';
 
 export function Chat() {
   const {messages, sendMessage, status} = useChat({
@@ -38,6 +39,12 @@ export function Chat() {
                 {part.text}
               </div>
             );
+          }
+
+          // Handle tool results using type-safe renderer
+          const toolOutput = renderToolPart(part);
+          if (toolOutput) {
+            return <div key={idx}>{toolOutput}</div>;
           }
 
           return null;
